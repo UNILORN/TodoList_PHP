@@ -9,18 +9,19 @@ var myComponent = Vue.extend({
 
 Vue.component('my-component', myComponent)
 
-var TOP = new Vue({
+new Vue({
   el: '#app',
   data: {
     items:[
-      {hoge:"test"}
+      {hoge:""}
     ],
     message:""
   },
   methods:{
     route:function(){
       var test = {hoge:this.message};
-      this.items.push(test)
+      this.items.push(test);
+      $(".textbox_add").val("");
     }
   }
 })

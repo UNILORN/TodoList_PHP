@@ -8,25 +8,18 @@
     <title>Vue</title>
   </head>
   <body>
-
-
     <div id="app">
       <div class="tableadd">
         <button type="button" class="addbutton" value="" @click="route()">my-component</button>
       </div>
-      <input type="text" v-model="message">
+      <input class="textbox_add" type="text" v-model="message" @keyup.enter="route()">
       <my-component v-for="item in items" :count="item"></my-component>
-
       <template id="template">
         <p>
           {{count.hoge}}
         </p>
       </template>
-
     </div>
-
-
   </body>
-
   <script src="./vue.js" type="text/javascript"></script>
 </html>
