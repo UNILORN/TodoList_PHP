@@ -1,4 +1,5 @@
 <?php
+require __DIR__."/htmlfunction.php";
 session_start();
 
 function usernamedecode($name){
@@ -14,11 +15,10 @@ function usernamedecode($name){
 function groupnamedecode($userid,$groups){
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
   $pdo = new PDO($dns,"root","shr850");
-  $sql = "select * from group where name='test';";
+  $sql = "select id from `group` where user_id='$userid';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
-  $groupdata = ($stmh->fetch(PDO::FETCH_ASSOC));
-  var_dump($groupdata["id"]);
+  $groupdata = $stmh->fetch(PDO::FETCH_ASSOC);
   return $groupdata["id"];
 }
 
@@ -68,18 +68,14 @@ function signup_control($name,$pass,$email){
 }
 
 function selectlistdata($name,$groups){
-  $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
   //user_id を抽出する
   $userid = usernamedecode($name);
   //group_id　を抽出する
   $groupid = groupnamedecode($userid,$groups);
 
-
-  echo "<br>";
-  var_dump($groups);
-
-  $sql = "select * from task where name='$name' and group_id='$groupid';";
+  $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
+  $pdo = new PDO($dns,"root","shr850");
+  $sql = "select * from task where user_id='$userid' and group_id='$groupid';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
   $count = $stmh->rowCount();
@@ -87,12 +83,19 @@ function selectlistdata($name,$groups){
 
   for ($i = 0;$i < $count;$i++){
     $data[] = ($stmh->fetch(PDO::FETCH_ASSOC));
+    unset($data[$i]["user_id"],$data[$i]["group_id"]);
   }
   return $data;
 }
 
-function addgroups($name){
+function addgroups($name,$username){
+  $userid = usernamedecode($username);
 
+  $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
+  $pdo = new PDO($dns,"root","shr850");
+  $sql = "insert into `group` (name,user_id) values('$name','$userid');";
+  $stmh = $pdo -> prepare($sql);
+  $stmh->execute();
 }
 
 function removegroups($name,$groups){

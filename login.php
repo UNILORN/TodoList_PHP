@@ -18,9 +18,9 @@ if(!preg_match("/^[a-zA-Z0-9\ \_]+$/",$_POST["name"])){
 $res = login_control($_POST["name"],$_POST["pass"]);
 
 switch($res){
-  case -1:echo "<p>name is not</p>";
+  case -1:echo "";
     break;
-  case 1:echo "<p>pass is not</p>";
+  case 1:echo "";
     break;
   case 2:
     $_SESSION["id"] = $_POST["name"];
@@ -35,11 +35,10 @@ switch($res){
   <head>
     <meta charset="utf-8">
     <title>login</title>
+    <?php head(); ?>
   </head>
   <body>
-
-    <a href="top.php">Main</a>
-    <a href="index.php">TOP</a>
+    <?php echo navbar(array("s"));  ?>
     <form action="login.php" method="post">
       <p>
         ID

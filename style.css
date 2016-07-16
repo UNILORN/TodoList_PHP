@@ -1,0 +1,7 @@
+body{
+  padding-top: 70px;
+}
+
+.navbar-nav > li{
+  float:left;
+}
