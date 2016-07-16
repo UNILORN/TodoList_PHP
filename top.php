@@ -15,16 +15,30 @@ else{  $id = $_SESSION["id"]; }
 
     <?php echo navbar(array("lo"));  ?>
 
-    <ul class="nav nav-tabs">
 
+    <ul class="nav nav-tabs">
       <?php
       $active = ' class="active"';
-
 
        ?>
       <li role="presentation" class="active"><a href="#">Tab1</a></li>
       <li role="presentation" ><a href="#">Tab2</a></li>
       <li role="presentation" ><a href="#">Tab3</a></li>
+
+      <div class="dropdown">
+        <a class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          <i class="material-icons">list</i>
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          <li><a href="#"><button type="button" class="btn btn-danger" name="button">Clear the current tab</button></a></li>
+          <li><a href="#">Another action</a></li>
+          <li><a href="#">Something else here</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#">Separated link</a></li>
+        </ul>
+      </div>
+
     </ul>
     <table class="table table-striped">
       <tr>
@@ -32,6 +46,7 @@ else{  $id = $_SESSION["id"]; }
         <th>data</th>
         <th>time</th>
       </tr>
+
       <?php
       $data = selectlistdata($_SESSION["id"],"test");
       foreach ($data as $key => $value) {
@@ -42,8 +57,6 @@ else{  $id = $_SESSION["id"]; }
         }
         echo "</tr>";
       }
-
-
        ?>
     </table>
   </body>

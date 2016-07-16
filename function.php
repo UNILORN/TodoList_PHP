@@ -90,7 +90,6 @@ function selectlistdata($name,$groups){
 
 function addgroups($name,$username){
   $userid = usernamedecode($username);
-
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
   $pdo = new PDO($dns,"root","shr850");
   $sql = "insert into `group` (name,user_id) values('$name','$userid');";
