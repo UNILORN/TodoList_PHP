@@ -15,7 +15,7 @@ function usernamedecode($name){
 function groupnamedecode($userid,$groups){
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
   $pdo = new PDO($dns,"root","shr850");
-  $sql = "select id from `group` where user_id='$userid';";
+  $sql = "select id from `group` where user_id='$userid' and name='$groups';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
   $groupdata = $stmh->fetch(PDO::FETCH_ASSOC);
@@ -49,6 +49,7 @@ function signup_control($name,$pass,$email){
     $stmh = $pdo -> prepare($sql);
     $stmh->execute();
     $count = $stmh->rowCount();
+    //idがヒットすれば
     if($count >= 1){
       echo "そのＩＤはすでに存在しています";
     }
@@ -56,7 +57,7 @@ function signup_control($name,$pass,$email){
     $sql = "insert into user (name,pass,email) values('$name','$pass','$email')";
     $stmh = $pdo -> prepare($sql);
     $stmh->execute();
-
+    // idがヒットしない場合
     if($count <= 0){
       $_SESSION["id"] = $name;
       header('location:top.php');
@@ -83,13 +84,34 @@ function selectlistdata($name,$groups){
 
   for ($i = 0;$i < $count;$i++){
     $data[] = ($stmh->fetch(PDO::FETCH_ASSOC));
+    // 項目の"user_id"と"group_id"が必要ないのでこの時点で消去
     unset($data[$i]["user_id"],$data[$i]["group_id"]);
   }
   return $data;
 }
 
+function selectgroupdata($name){
+  //user_id を抽出
+  $userid = usernamedecode($name);
+
+  $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
+  $pdo = new PDO($dns,"root","shr850");
+  $sql = "select name from `group` where user_id='$userid';";
+  $stmh = $pdo -> prepare($sql);
+  $stmh->execute();
+  $count = $stmh->rowCount();
+  $data = [];
+
+  for ($i = 0;$i < $count;$i++){
+    $data[] = ($stmh->fetch(PDO::FETCH_ASSOC));
+  }
+  return $data;
+}
+
 function addgroups($name,$username){
+  //user_id を抽出
   $userid = usernamedecode($username);
+
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
   $pdo = new PDO($dns,"root","shr850");
   $sql = "insert into `group` (name,user_id) values('$name','$userid');";
@@ -97,13 +119,40 @@ function addgroups($name,$username){
   $stmh->execute();
 }
 
-function removegroups($name,$groups){
+function removegroups($username,$groups){
+  $userid = usernamedecode($username);
+  $groupid = groupnamedecode($userid,$groups);
+  $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
+  $pdo = new PDO($dns,"root","shr850");
+  $sql = "delete from task where user_id = '$user_id' and group_id = '$groupid';";
+  $stmh = $pdo -> prepare($sql);
+  $stmh->execute();
+
+  $sql = "delete from `group` where user_id = '$user_id' and id = '$groupid';";
+  $stmh = $pdo -> prepare($sql);
+  $stmh->execute();
 
 }
 
 function addlistdata($name,$groups,$data){
-
+  $userid = usernamedecode($username);
+  $groupid = groupnamedecode($userid,$groups);
+  $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
+  $pdo = new PDO($dns,"root","shr850");
+  $sql = "insert into task (name,time,user_id,group_id) values ('$data',now(),'$userid','$groupid');";
+  $stmh = $pdo -> prepare($sql);
+  $stmh->execute();
 }
 
+function firstgroup($name){
+  $userid = usernamedecode($name);
+  $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
+  $pdo = new PDO($dns,"root","shr850");
+  $sql = "select name from `group` where user_id='$userid';";
+  $stmh = $pdo -> prepare($sql);
+  $stmh->execute();
+  $data = ($stmh->fetch(PDO::FETCH_ASSOC));
+  return $data["name"];
+}
 
  ?>

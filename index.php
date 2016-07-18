@@ -14,6 +14,9 @@ require __DIR__."/function.php";
   </head>
   <body>
     <?php echo navbar(array("s","li"));  ?>
-
+    <img class="top-img" style="-webkit-filter:blur(2px);" src="dsc_0199.jpg" />
+    <div class="toptext">
+      <h1>TOPPAGE</h1>
+    </div>
   </body>
 </html>
