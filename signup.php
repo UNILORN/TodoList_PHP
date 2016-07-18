@@ -8,9 +8,11 @@ if(!empty($_SESSION["id"])){
 
 if(!empty($_POST["name"]) || !empty($_POST["pass"])){
   if(!preg_match("/^[a-zA-Z0-9\ \_]+$/",$_POST["name"])){
-    exit;
+    echo "入力不可文字が入力されています";
   }
-  $message = signup_control($_POST["name"],$_POST["pass"],$_POST["email"]);
+  else{
+    $message = signup_control($_POST["name"],$_POST["pass"],$_POST["email"]);
+  }
 }
 
  ?>

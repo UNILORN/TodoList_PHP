@@ -22,6 +22,17 @@ function groupnamedecode($userid,$groups){
   return $groupdata["id"];
 }
 
+function passwordcheck($name,$pass){
+  $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
+  $pdo = new PDO($dns,"root","shr850");
+  $sql = "select * from user where name = '$name'";
+  $stmh = $pdo -> prepare($sql);
+  $stmh->execute();
+  $datalist = ($stmh->fetch(PDO::FETCH_ASSOC));
+  if($datalist["pass"]==$pass) { return 1; }
+  else { return 0; }
+}
+
 function login_control($name,$pass){
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
   $pdo = new PDO($dns,"root","shr850");
@@ -114,7 +125,7 @@ function addgroups($name,$username){
 
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
   $pdo = new PDO($dns,"root","shr850");
-  $sql = "insert into `group` (name,user_id) values('$name','$userid');";
+  $sql = "insert into `group` (name,user_id) values('".mb_convert_encoding($name,'UTF-8')."','$userid');";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
 }
@@ -124,22 +135,22 @@ function removegroups($username,$groups){
   $groupid = groupnamedecode($userid,$groups);
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
   $pdo = new PDO($dns,"root","shr850");
-  $sql = "delete from task where user_id = '$user_id' and group_id = '$groupid';";
+  $sql = "delete from task where user_id = '$userid' and group_id = '$groupid';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
 
-  $sql = "delete from `group` where user_id = '$user_id' and id = '$groupid';";
+  $sql = "delete from `group` where user_id = '$userid' and id = '$groupid';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
 
 }
 
-function addlistdata($name,$groups,$data){
-  $userid = usernamedecode($username);
+function addlistdata($name,$groups,$data,$date){
+  $userid = usernamedecode($name);
   $groupid = groupnamedecode($userid,$groups);
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
   $pdo = new PDO($dns,"root","shr850");
-  $sql = "insert into task (name,time,user_id,group_id) values ('$data',now(),'$userid','$groupid');";
+  $sql = "insert into `task` (name,time,user_id,group_id) values ('".mb_convert_encoding($data,'UTF-8')."','$date','$userid','$groupid');";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
 }
