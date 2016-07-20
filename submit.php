@@ -6,13 +6,18 @@
     $err = NULL;
 
     if(!empty($_POST["addtab"])){
-      addgroups($_POST["addtab"],$_SESSION["id"]);
+      mb_regex_encoding("UTF-8");
+      if(!preg_match("/^[a-zA-Z0-9ぁ-んァ-ヶー一-龠\ \_]+$/u",$_POST["addtab"])){
+        $err =  "入力不可文字が入力されています";
+      }
+      else { $err = addgroups($_POST["addtab"],$_SESSION["id"]); }
     }
 
     if(!empty($_POST["deletetab"])){
       if(passwordcheck($_SESSION["id"],$_POST["deletetab"]) == 1){
         if(!empty($_SESSION["group"])){
           removegroups($_SESSION["id"],$_SESSION["group"]);
+          $_SESSION["group"] = NULL;
         }
         else{ $err = "グループがありません"; }
       }
@@ -20,10 +25,25 @@
     }
 
     if(!empty($_POST["addlist"])){
-      if(!empty($_POST["adddate"])){
-        addlistdata($_SESSION["id"],$_SESSION["group"],$_POST["addlist"],$_POST["adddate"]);
+      mb_regex_encoding("UTF-8");
+      if(!preg_match("/^[a-zA-Z0-9ぁ-んァ-ヶー一-龠\ \_]+$/u",$_POST["addlist"])){
+        $err =  "入力不可文字が入力されています";
       }
+      else { addlistdata($_SESSION["id"],$_SESSION["group"],$_POST["addlist"],$_POST["adddate"]); }
     }
+
+    if(!empty($_GET["delete"])){
+      deletelistdata($_GET["delete"]);
+    }
+
+    if(!empty($_POST["editlist"])){
+      if(!preg_match("/^[a-zA-Z0-9\ \_]+$/",$_POST["addlist"])){
+        $err =  "入力不可文字が入力されています";
+      }
+      else { editlistdata($_POST["editid"],$_POST["editlist"],$_POST["editdate"],$_SESSION["id"]); }
+    }
+
+
 
     if(empty($err)){ header('location:top.php'); }
     else { echo '<meta http-equiv="refresh" content="2;URL=top.php"';}

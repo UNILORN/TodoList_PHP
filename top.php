@@ -2,6 +2,7 @@
 require __DIR__."/function.php";
 if (empty($_SESSION["id"])){  header('location:login.php');  exit; }
 else {  $id = $_SESSION["id"]; }
+$groupname = NULL;
 if (empty($_SESSION["group"])){ $groupname = firstgroup($id);}
 else {  $groupname = $_SESSION["group"]; }
 // groupの有無（ NULL = 無し）
@@ -55,6 +56,15 @@ if(!empty($groupname)){
               <li role="separator" class="divider"></li>
               <li><button style="width:100%;" type="button" class="btn btn-danger" data-toggle="modal" data-target="#DeletedataModal">Delete Tab in All Data</button></li>
           </ul>
+        </li>
+
+        <li role="presentation" style="float:right;">
+          <form action="top.php" method="post">
+            <div class="input-group" style="width:250px;">
+              <span class="input-group-addon" id="basic-addon1">Search</span>
+              <input name="searchname" type="text" class="form-control" placeholder="2016-01 or name" aria-describedby="basic-addon1">
+            </div>
+          </form>
         </li>
       </ul>
     </div>
@@ -160,12 +170,17 @@ if(!empty($groupname)){
       </div>
     </div>
 
-
     <table class="table table-striped">
       <tr>
         <th style="width:40px;">id</th>
         <th>data</th>
         <th style="width:300px;">time</th>
+        <?php
+        if(!empty($_POST["searchname"])){
+          echo '<th style="width:100px;">Group</th>';
+        }
+         ?>
+        <th style="width:100px;">Edit</th>
         <th style="width:100px;">Del</th>
       </tr>
 
@@ -174,18 +189,36 @@ if(!empty($groupname)){
         echo "<tr><td></td><td>###グループが存在しません　グループを作成してください###</td><td></td><td></td></tr>";
       }
       else{
-        $data = selectlistdata($_SESSION["id"],$_SESSION["group"]);
+        if(!empty($_POST["searchname"])){
+          $data = searchlist($_SESSION["id"],$_POST["searchname"]);
+        }
+        else{
+          $data = selectlistdata($_SESSION["id"],$_SESSION["group"]);
+        }
         foreach ($data as $key => $value) {
           echo "<tr>";
           foreach ($data[$key] as $key2 => $value2) {
             echo "<td>$value2</td>";
-            if ($key2 >= 3) { break; }
+            if ($key2 == "time") { break; }
           }
-          echo '<td></td>';
-          echo "</tr>";
+          if(!empty($_POST["searchname"])){
+            $gropename = groupnameencode($data[$key]['group_id']);
+            echo "<td>$gropename</td>";
+          }
+          ?><td>
+              <button style="width:100%;" type="button" class="btn btn-default" data-toggle="modal" data-target="#EditlistModal<?php echo $data[$key]['id']; ?> ">Edit</button>
+              <?php edithtml($data[$key]['id']) ?>
+            </td>
+            <td>
+              <a href="submit.php?delete=<?php echo $data[$key]['id'];?> ">
+                <button style="width:100%;" type="button" class="btn btn-default">Delete</button>
+              </a>
+            </td>
+          </tr>
+          <?php
         }
       }
        ?>
     </table>
-  </body>
+  </body></a>
 </html>

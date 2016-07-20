@@ -21,6 +21,15 @@ function groupnamedecode($userid,$groups){
   $groupdata = $stmh->fetch(PDO::FETCH_ASSOC);
   return $groupdata["id"];
 }
+function groupnameencode($groups){
+  $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
+  $pdo = new PDO($dns,"root","shr850");
+  $sql = "select name from `group` where id='$groups';";
+  $stmh = $pdo -> prepare($sql);
+  $stmh->execute();
+  $groupdata = $stmh->fetch(PDO::FETCH_ASSOC);
+  return $groupdata["name"];
+}
 
 function passwordcheck($name,$pass){
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
@@ -125,9 +134,20 @@ function addgroups($name,$username){
 
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
   $pdo = new PDO($dns,"root","shr850");
-  $sql = "insert into `group` (name,user_id) values('".mb_convert_encoding($name,'UTF-8')."','$userid');";
+
+  $sql = "select * from `group` where user_id = '$userid' and name = '$name';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
+  $count = $stmh->rowCount();
+  if($count <=0){
+    $sql = "insert into `group` (name,user_id) values('".mb_convert_encoding($name,'UTF-8')."','$userid');";
+    $stmh = $pdo -> prepare($sql);
+    $stmh->execute();
+    return NULL;
+  }
+  else{
+    return "グループ名が重複しています。";
+  }
 }
 
 function removegroups($username,$groups){
@@ -150,7 +170,34 @@ function addlistdata($name,$groups,$data,$date){
   $groupid = groupnamedecode($userid,$groups);
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
   $pdo = new PDO($dns,"root","shr850");
-  $sql = "insert into `task` (name,time,user_id,group_id) values ('".mb_convert_encoding($data,'UTF-8')."','$date','$userid','$groupid');";
+  if(!empty($date)){
+    $sql = "insert into `task` (name,time,user_id,group_id) values ('".mb_convert_encoding($data,'UTF-8')."','$date','$userid','$groupid');";
+  }
+  else{
+    $sql = "insert into `task` (name,user_id,group_id) values ('".mb_convert_encoding($data,'UTF-8')."','$userid','$groupid');";
+  }
+  $stmh = $pdo -> prepare($sql);
+  $stmh->execute();
+}
+
+function editlistdata($dataid,$data,$date,$name){
+  $userid = usernamedecode($name);
+  $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
+  $pdo = new PDO($dns,"root","shr850");
+  if(!empty($date)){
+    $sql = "update `task` set name= '".mb_convert_encoding($data,'UTF-8')."',time='$date' where id = '$dataid' and user_id='$userid';";
+  }
+  else{
+    $sql = "update `task` set name= '".mb_convert_encoding($data,'UTF-8')."' where id = '$dataid' and user_id='$userid';";
+  }
+  $stmh = $pdo -> prepare($sql);
+  $stmh->execute();
+}
+
+function deletelistdata($dataid){
+  $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
+  $pdo = new PDO($dns,"root","shr850");
+  $sql = "delete from `task` where id = '$dataid';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
 }
@@ -164,6 +211,46 @@ function firstgroup($name){
   $stmh->execute();
   $data = ($stmh->fetch(PDO::FETCH_ASSOC));
   return $data["name"];
+}
+
+function searchlist($name,$data){
+  $userid = usernamedecode($name);
+  $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
+  $pdo = new PDO($dns,"root","shr850");
+  $strcnt = strpos($data,'-');
+  if($strcnt !== false){
+    switch($strcnt){
+      case 2:
+      $sqlstr = "substring(`time`,6,".strlen($data).")";
+      break;
+      case 4:
+      $sqlstr = "substring(`time`,1,".strlen($data).")";
+      break;
+      default:
+      $sqlstr = "substring(`time`,1,".strlen($data).")";
+      break;
+    }
+    $sql = "select id,name,time,group_id from `task` where user_id='$userid' and  $sqlstr = '$data';";
+  }
+  else{
+    $strcnt = strpos($data,':');
+    if($strcnt !== false){
+      $sqlstr = "substring(`time`,12,".strlen($data).")";
+      $sql = "select id,name,time,group_id from `task` where user_id='$userid' and  $sqlstr = '$data';";
+    }
+    else{
+      $sql = "select id,name,time,group_id from `task` where user_id='$userid' and  (substring(`name`,1,".mb_strlen(mb_convert_encoding($data,'UTF-8')).") = '".mb_convert_encoding($data,'UTF-8')."' or substring(`time`,1,".strlen($data).") = '$data');";
+    }
+  }
+  $stmh = $pdo -> prepare($sql);
+  $stmh->execute();
+  $count = $stmh->rowCount();
+  $datalist = [];
+
+  for ($i = 0;$i < $count;$i++){
+    $datalist[] = ($stmh->fetch(PDO::FETCH_ASSOC));
+  }
+  return $datalist;
 }
 
  ?>

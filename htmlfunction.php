@@ -17,13 +17,18 @@ function navbar($data){
                   <li><a href="index.php">TOPpage</a></li>
                 </ul>
                 <ul class="nav navber-nav navbar-right">';
+  if(!empty($_SESSION["id"])){
+    $html .= '<li style="float:left;"><a href="top.php">name : '.$_SESSION["id"].'</a></li>';
+  }
   foreach ($data as $value) {
     switch ($value) {
       case "s":
         $html .= $s;
         break;
       case "li":
-        $html .= $li;
+        if(empty($_SESSION["id"])){
+          $html .= $li;
+        }
         break;
       case "lo":
         $html .= $lo;
@@ -46,5 +51,36 @@ function head(){
   <link rel="stylesheet" href="style.css" media="screen" title="no title" charset="utf-8">';
 }
 
+function Edithtml($id){
+  echo '
+  <div class="modal fade" id="EditlistModal'.$id.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Edit List Data</h4>
+        </div>
+        <form action="submit.php" method="post">
+        <input type="hidden" name="editid" value="'.$id.'">
+          <div class="modal-body">
+            <div class="input-group">
+              <span class="input-group-addon" id="basic-addon2">Enter the name</span>
+              <input required type="text" class="form-control" name="editlist" value="">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon" id="basic-addon2">Date Time</span>
+              <input type="datetime-local" class="form-control" name="editdate" value="">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <input type="submit" class="btn btn-primary" value="Editlist">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  ';
+}
 
  ?>
