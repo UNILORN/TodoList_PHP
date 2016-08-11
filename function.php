@@ -4,7 +4,7 @@ session_start();
 
 function usernamedecode($name){
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
   $sql = "select id from user where name='$name';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
@@ -14,7 +14,7 @@ function usernamedecode($name){
 
 function groupnamedecode($userid,$groups){
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
   $sql = "select id from `group` where user_id='$userid' and name='$groups';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
@@ -23,7 +23,7 @@ function groupnamedecode($userid,$groups){
 }
 function groupnameencode($groups){
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
   $sql = "select name from `group` where id='$groups';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
@@ -33,7 +33,7 @@ function groupnameencode($groups){
 
 function passwordcheck($name,$pass){
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
   $sql = "select * from user where name = '$name'";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
@@ -44,7 +44,7 @@ function passwordcheck($name,$pass){
 
 function login_control($name,$pass){
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
 
   $sql = "select * from user where name = '$name'";
   $stmh = $pdo -> prepare($sql);
@@ -64,7 +64,7 @@ function signup_control($name,$pass,$email){
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
 
   try {
-    $pdo = new PDO($dns,"root","shr850");
+    $pdo = new PDO($dns,"testuser","");
     $sql = "select name from user where name='$name';";
     $stmh = $pdo -> prepare($sql);
     $stmh->execute();
@@ -95,7 +95,7 @@ function selectlistdata($name,$groups){
   $groupid = groupnamedecode($userid,$groups);
 
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
   $sql = "select * from task where user_id='$userid' and group_id='$groupid';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
@@ -115,7 +115,7 @@ function selectgroupdata($name){
   $userid = usernamedecode($name);
 
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
   $sql = "select name from `group` where user_id='$userid';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
@@ -133,7 +133,7 @@ function addgroups($name,$username){
   $userid = usernamedecode($username);
 
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
 
   $sql = "select * from `group` where user_id = '$userid' and name = '$name';";
   $stmh = $pdo -> prepare($sql);
@@ -154,7 +154,7 @@ function removegroups($username,$groups){
   $userid = usernamedecode($username);
   $groupid = groupnamedecode($userid,$groups);
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
   $sql = "delete from task where user_id = '$userid' and group_id = '$groupid';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
@@ -169,7 +169,7 @@ function addlistdata($name,$groups,$data,$date){
   $userid = usernamedecode($name);
   $groupid = groupnamedecode($userid,$groups);
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
   if(!empty($date)){
     $sql = "insert into `task` (name,time,user_id,group_id) values ('".mb_convert_encoding($data,'UTF-8')."','$date','$userid','$groupid');";
   }
@@ -183,7 +183,7 @@ function addlistdata($name,$groups,$data,$date){
 function editlistdata($dataid,$data,$date,$name){
   $userid = usernamedecode($name);
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
   if(!empty($date)){
     $sql = "update `task` set name= '".mb_convert_encoding($data,'UTF-8')."',time='$date' where id = '$dataid' and user_id='$userid';";
   }
@@ -196,7 +196,7 @@ function editlistdata($dataid,$data,$date,$name){
 
 function deletelistdata($dataid){
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
   $sql = "delete from `task` where id = '$dataid';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
@@ -205,7 +205,7 @@ function deletelistdata($dataid){
 function firstgroup($name){
   $userid = usernamedecode($name);
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
   $sql = "select name from `group` where user_id='$userid';";
   $stmh = $pdo -> prepare($sql);
   $stmh->execute();
@@ -216,7 +216,7 @@ function firstgroup($name){
 function searchlist($name,$data){
   $userid = usernamedecode($name);
   $dns = "mysql:host=127.0.0.1;dbname=todo_php;charset=utf8";
-  $pdo = new PDO($dns,"root","shr850");
+  $pdo = new PDO($dns,"testuser","");
   $strcnt = strpos($data,'-');
   if($strcnt !== false){
     switch($strcnt){

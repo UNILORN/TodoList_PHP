@@ -37,7 +37,7 @@
     }
 
     if(!empty($_POST["editlist"])){
-      if(!preg_match("/^[a-zA-Z0-9\ \_]+$/",$_POST["addlist"])){
+      if(!preg_match("/^[a-zA-Z0-9ぁ-んァ-ヶー一-龠\ \_]+$/u",$_POST["editlist"])){
         $err =  "入力不可文字が入力されています";
       }
       else { editlistdata($_POST["editid"],$_POST["editlist"],$_POST["editdate"],$_SESSION["id"]); }
